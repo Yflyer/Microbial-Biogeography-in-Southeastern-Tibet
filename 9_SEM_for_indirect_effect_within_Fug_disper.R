@@ -50,7 +50,7 @@ full_model <- '
 # select processes by SEM performance
 fit1 <- sem(full_model, data = model_dt)
 result <- summary(fit1, standardized = TRUE,fit.measures = TRUE) 
-result$PE %>% filter(lhs %in% c('Rs','Fug_disper','DL') & rhs %in% c('DL','Fug_disper'))
+result$pe %>% filter(lhs %in% c('Rs','Fug_disper','DL') & rhs %in% c('DL','Fug_disper'))
 fitmeasures(fit1)[c('rmsea','cfi','tli')]
 
 ###############################
@@ -61,15 +61,16 @@ lm(Fug_disper ~ pH + SOC + NH4 + NO3 + TN + Temp. + Water_content,model_dt) %>% 
 # prune paths by stepwise regression
 ###############################
 prune_model <- '
-  Fug_disper ~ SOC + Temp.
-  DL ~ NO3 + Temp. + Fug_disper
-  Rs ~ Fug_disper + TN + Temp. + DL
+  Fug_disper ~ SOC + Temp. + pH
+  DL ~ NO3 + Temp. + Fug_disper + pH
+  Rs ~ Fug_disper + TN + Temp. + DL + Water_content
 '
 fit1 <- sem(prune_model, data = model_dt)
 resid(fit1, "cor")
 modificationindices(fit1, minimum.value = 20)
 fitmeasures(fit1)[c('rmsea','cfi','tli')]
 summary(fit1, standardized = TRUE,fit.measures = TRUE) -> result
-write.csv(result$PE,paste0(folder,'/Bac_SEM_pruning.csv'),row.names = F)
-write.csv(data.frame(result$FIT),paste0(folder,'/Bac_SEM_pruning_fit.csv'))
+write.csv(result$pe,paste0(folder,'/Fug_disper_SEM_pruning.csv'),row.names = F)
+write.csv(data.frame(result$fit),paste0(folder,'/Fug_disper_SEM_pruning_fit.csv'))
+
 

@@ -1,0 +1,5 @@
+,Diversity,Effect size,Significance,Type
+1,Bacterial beta-diversity,0.103308,Significant,Bacterial community
+2,Bacterial alpha-diversity,0.056448,Significant,Bacterial community
+3,Fungal beta-diversity,0.162932,Significant,Fungal community
+4,Fungal alpha-diversity,-0.0334,Insignificant,Fungal community

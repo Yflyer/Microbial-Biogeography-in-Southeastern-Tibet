@@ -41,31 +41,31 @@ colnames(model_dt)
 # stochasticity and environment change beta effect on Rs patterns
 ### DL
 full_model <- ' 
-  Bac_disper ~ pH + SOC + NH4 + NO3 + TN + Temp. + Water_content
-  DL ~ Bac_disper + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content
-  HD ~ Bac_disper + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content 
-  DR ~ Bac_disper + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content 
-  Rs ~ pH + SOC + NH4 + NO3 + TN + Temp. + Water_content  + Bac_disper + DL + HD + DR
+  Bac_richness ~ pH + SOC + NH4 + NO3 + TN + Temp. + Water_content
+  DL ~ Bac_richness + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content
+  HD ~ Bac_richness + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content 
+  DR ~ Bac_richness + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content 
+  Rs ~ pH + SOC + NH4 + NO3 + TN + Temp. + Water_content  + Bac_richness + DL + HD + DR
 '
 
 # select processes by SEM performance
 fit1 <- sem(full_model, data = model_dt)
 result <- summary(fit1, standardized = TRUE,fit.measures = TRUE) 
-result$PE %>% filter(lhs %in% c('Rs','Bac_disper','DL') & rhs %in% c('DL','Bac_disper'))
+result$pe %>% filter(lhs %in% c('Rs','Bac_richness','DL','HD','DR') & rhs %in% c('DL','HD','DR','Bac_richness') & op =='~')
 
 
 ###############################
-lm(Rs ~ pH + SOC + NH4 + NO3 + TN + Temp. + Water_content  + Bac_disper + DL + HD + DR,model_dt) %>% step(.) %>% summary(.)
-lm(DL ~ Bac_disper + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content,model_dt) %>% step(.) %>% summary(.)
-lm(HD ~ Bac_disper + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content,model_dt) %>% step(.) %>% summary(.)
-lm(Bac_disper ~ pH + SOC + NH4 + NO3 + TN + Temp. + Water_content,model_dt) %>% step(.) %>% summary(.)
+lm(Rs ~ pH + SOC + NH4 + NO3 + TN + Temp. + Water_content  + Bac_richness + DL + HD + DR,model_dt) %>% step(.) %>% summary(.)
+lm(DL ~ Bac_richness + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content,model_dt) %>% step(.) %>% summary(.)
+lm(HD ~ Bac_richness + pH + SOC + NH4 + NO3 + TN + Temp. + Water_content,model_dt) %>% step(.) %>% summary(.)
+lm(Bac_richness ~ pH + SOC + NH4 + NO3 + TN + Temp. + Water_content,model_dt) %>% step(.) %>% summary(.)
 
 # prune paths by stepwise regression
 ###############################
 prune_model <- '
-  Bac_disper ~ NO3 + Temp. + Water_content
-  DL ~ Bac_disper + NH4 + Temp.
-  HD ~ Bac_disper + NO3 + Temp.
+  Bac_richness ~ pH + Temp. + NH4 + TN
+  DL ~ Bac_richness + NH4 + Temp.
+  HD ~ NO3 + Temp.
   Rs ~ DL + HD + TN + Temp. + Water_content
 '
 fit1 <- sem(prune_model, data = model_dt)
@@ -73,6 +73,6 @@ resid(fit1, "cor")
 modificationindices(fit1, minimum.value = 20)
 fitmeasures(fit1)[c('rmsea','cfi','tli')]
 summary(fit1, standardized = TRUE,fit.measures = TRUE) -> result
-write.csv(result$PE,paste0(folder,'/Bac_SEM_pruning.csv'),row.names = F)
-write.csv(data.frame(result$FIT),paste0(folder,'/Bac_SEM_pruning_fit.csv'))
+write.csv(result$pe,paste0(folder,'/Bac_richness_SEM_pruning.csv'),row.names = F)
+write.csv(data.frame(result$fit),paste0(folder,'/Bac_richness_SEM_pruning_fit.csv'))
 

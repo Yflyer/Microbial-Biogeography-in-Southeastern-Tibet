@@ -184,6 +184,18 @@ lmp <- function (modelobject) {
   return(p)
 }
 
+##############################
+lm_par = function(Y,X){
+  decay <- lm(Y~X)
+  lm.slope = decay$coefficients ['X'] %>% round(.,3)
+  lm.intercept = decay$coefficients ['(Intercept)'] %>% round(.,3)
+  lm.P = lmp(decay) %>% labelpstar()
+  R2= summary(decay)$adj.r.squared %>% round(.,3)
+  N = length(summary(decay)$residuals)
+  return(c(lm.slope,lm.P,lm.intercept,R2,N))
+}
+
+##############################
 normalization<-function(y){
   x<-y[!is.na(y)]
   x<-(x - min(x)) / (max(x) - min(x))
